@@ -1,0 +1,8 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - docker build -t njaya2019/simpleweb -f Dockerfile.dev .
+
+script:
+  - docker run njaya2019/simpleweb pytest --cov

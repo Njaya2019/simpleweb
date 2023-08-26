@@ -1,0 +1,31 @@
+# Specicfy a base image
+FROM python:3.11.2
+
+# Working directory and copy all files to the working directory
+WORKDIR /opt/app
+
+# Only copy requirements.txt file first, to reuduce the time
+# while building a docker image for that this step doesn't take
+# much time while building a the image again
+COPY ./requirements.txt /opt/app
+
+# Install dependencies
+RUN pip install -r requirements.txt
+
+# copy projects files to app folder after copying requirements.txt file to improve build time of the image.
+# We might not need this since we referencing everything with $(pwd):/opt/app in docker CLI or .:/opt/app
+# in docker compose, but it's necessary when we are building an image for production purposes.
+COPY . /opt/app
+
+# Set default commands
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# docker build -f Dockerfile.dev .
+# docker run -p 8000:8000 -v $(pwd):/opt/app image_name to monitor changes
+
+# to run test after editing to pick the new changes.
+# docker exec -it 7cd9e7e12062 pytest
+# Or we can create "test" services in docker-compose to pick the edited tests automatically
+
+# docker-compose -up --build
+# docker-compose down

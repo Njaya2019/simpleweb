@@ -1,0 +1,26 @@
+version: "3"
+services:
+  simple-app-django-volume:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev 
+    command: ["gunicorn simpleweb.wsgi:application --bind 0.0.0.0:8000"]
+    ports:
+      - "4000:8000"
+    volumes:
+      - .:/opt/app
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - 1337:80
+    depends_on:
+      - simple-app-django-volume
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev 
+    volumes:
+      - .:/opt/app
+    command: ["pytest"]
+    
